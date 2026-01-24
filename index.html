@@ -1,0 +1,1020 @@
+<!doctype html>
+<html lang="da">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FP9 – Opgavesæt 11</title>
+  <style>
+    :root{
+      /* Farver (KRAV) */
+      --green:#dff3e3;     /* Tal og algebra */
+      --lilac:#eadcf7;     /* Statistik og sandsynlighed */
+      --burg:#f2d7dd;      /* Geometri og måling (lys bourgogne/rød) */
+
+      --border:#cfd6dd;
+      --ink:#111827;
+      --muted:#6b7280;
+      --focus:#2563eb;
+      --panel:#ffffff;
+      --bg:#f7f7f8;
+      --cta:#1d4ed8;
+    }
+    *{box-sizing:border-box}
+    body{ margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; color:var(--ink); background:var(--bg); }
+    .wrap{ max-width:1200px; margin:24px auto; padding:0 16px; }
+
+    .topbar{
+      display:grid;
+      grid-template-columns: 1fr 380px;
+      gap:16px;
+      align-items:stretch;
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:10px;
+      overflow:hidden;
+    }
+    .legend{
+      display:flex; gap:16px; align-items:center;
+      padding:10px 14px; border-bottom:1px solid var(--border);
+      font-size:14px; flex-wrap:wrap;
+    }
+    .tag{ display:inline-flex; gap:8px; align-items:center; color:#111; white-space:nowrap; }
+    .swatch{ width:18px; height:12px; border-radius:3px; border:1px solid rgba(0,0,0,.15); display:inline-block; }
+
+    .navstrip{ display:flex; align-items:stretch; overflow:auto; scrollbar-width: thin; }
+    .navstrip::-webkit-scrollbar{height:10px}
+    .navstrip::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:99px}
+
+    .seg{ display:flex; }
+    .seg.green{ background:var(--green); }
+    .seg.lilac{ background:var(--lilac); }
+    .seg.burg{ background:var(--burg); }
+
+    .navbtn{
+      width:86px; min-width:86px; height:58px;
+      border:0; background:transparent; cursor:pointer;
+      font-weight:900; font-size:14px; color:#111;
+      position:relative; outline:none;
+      display:flex; align-items:center; justify-content:center;
+      padding:0 10px;
+    }
+    .navbtn:focus-visible{ box-shadow: inset 0 0 0 3px var(--focus); border-radius: 10px; }
+    .navbtn.active::after{ content:""; position:absolute; inset:10px; border-radius:999px; background:#111; z-index:0; }
+    .navbtn.active span{ position:relative; z-index:1; color:#fff; }
+    .navbtn.done{ opacity:.85; }
+    .navbtn.done:not(.active) span{ text-decoration: underline; text-underline-offset: 4px; }
+
+    .rightbox{
+      display:flex; flex-direction:column; justify-content:center;
+      border-left:1px solid var(--border);
+      padding:10px 14px; gap:10px;
+    }
+    .finishRow{ display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+    .btn{
+      border:1px solid rgba(29,78,216,.2);
+      background:#eaf2ff; color:var(--cta);
+      font-weight:900; padding:10px 12px; border-radius:10px;
+      cursor:pointer;
+    }
+    .btn.secondary{ background:#fff; border:1px solid var(--border); color:#111; }
+    .btn:hover{ filter:brightness(.98); }
+    .smallnote{ font-size:12px; color:var(--muted); line-height:1.35; }
+    .settings{ display:flex; gap:10px; align-items:center; font-size:13px; color:var(--muted); }
+
+    .content{
+      margin-top:18px;
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:10px;
+      padding:18px;
+    }
+    h1{ margin:6px 0 4px; font-size:44px; letter-spacing:-.02em; }
+    .subhead{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+      color:var(--muted); font-weight:700; margin: 0 0 12px;
+      font-size:14px;
+    }
+    .hint{
+      background:#dff1f1;
+      border-radius:8px;
+      padding:12px 14px;
+      margin-bottom:18px;
+      color:#0f766e;
+      font-weight:900;
+    }
+    .qblock{
+      border:1px solid #eef2f7;
+      border-radius:10px;
+      padding:14px;
+      margin: 0 0 12px;
+      background:#fff;
+    }
+    .qhead{ display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:10px; }
+    .qtitle{ font-size:22px; font-weight:900; display:flex; gap:10px; align-items:baseline; }
+    .qmeta{ color:var(--muted); font-size:12px; }
+    .qhtml{ font-size:18px; line-height:1.5; margin: 0; color:#111; }
+
+    .qmedia{ margin-top:10px; }
+    .qmedia img{
+      max-width:min(520px, 100%);
+      height:auto;
+      border:1px solid var(--border);
+      border-radius:12px;
+      background:#fff;
+      display:block;
+    }
+    .qcaption{ font-size:12px; color:var(--muted); margin-top:6px; }
+
+    .sub{
+      display:flex; align-items:center; gap:12px;
+      padding:10px 0; border-top:1px solid #eef2f7; flex-wrap:wrap;
+    }
+    .sub:first-of-type{ border-top:0; }
+    .sub .label{ width:78px; min-width:78px; font-weight:900; font-size:16px; text-align:right; }
+    .sub .prompt{ flex:1; font-size:20px; min-width: 220px; }
+    .ans{
+      width: 240px; height: 44px; font-size: 18px; padding: 6px 10px;
+      border: 2px solid #d1d5db; border-radius: 8px; outline:none;
+    }
+    .ans:focus{ border-color: var(--focus); }
+
+    .pager{
+      display:flex; justify-content:space-between; align-items:center;
+      margin-top:16px; gap:12px;
+    }
+    .pager .meta{ color:var(--muted); font-size:14px; }
+    .pager button{
+      border:1px solid var(--border); background:#fff;
+      padding:10px 12px; border-radius:10px;
+      cursor:pointer; font-weight:900;
+    }
+    .pager button:hover{ background:#fafafa; }
+
+    /* Modal */
+    .modal{
+      position:fixed; inset:0; background:rgba(0,0,0,.4);
+      display:none; align-items:center; justify-content:center;
+      padding:16px;
+    }
+    .modal.open{ display:flex; }
+    .card{
+      width:min(980px, 100%);
+      background:#fff;
+      border-radius:14px;
+      border:1px solid var(--border);
+      overflow:hidden;
+    }
+    .cardhead{
+      display:flex; justify-content:space-between; align-items:center;
+      padding:14px 16px; border-bottom:1px solid var(--border);
+      gap:10px; flex-wrap:wrap;
+    }
+    .cardhead h2{ margin:0; font-size:18px; }
+    .cardbody{ padding:14px 16px; max-height:70vh; overflow:auto; }
+
+    table{ width:100%; border-collapse:collapse; font-size:14px; }
+    th, td{ border-bottom:1px solid #eef2f7; padding:10px 8px; text-align:left; vertical-align:top; }
+    th{ color:#374151; font-size:13px; text-transform:uppercase; letter-spacing:.04em; }
+    .pill{ display:inline-block; padding:2px 8px; border-radius:999px; font-weight:900; font-size:12px; }
+    .pill.ok{ background:#dcfce7; color:#166534; }
+    .pill.bad{ background:#fee2e2; color:#991b1b; }
+    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace; }
+
+    /* PDF area */
+    #pdfArea{ display:none; background:#fff; }
+
+    @media print{
+      body{ background:#fff; }
+      .wrap{ margin:0; max-width:none; }
+
+      .topbar{ display:none !important; }
+      .pager{ display:none !important; }
+      .modal{ display:none !important; }
+
+      body.pdfmode .content{ display:none !important; }
+      body.pdfmode #pdfArea{ display:block !important; padding:18px; }
+
+      body.pdfmode .pdf-title{ font-size: 20px; font-weight: 900; margin-bottom: 8px; }
+      body.pdfmode .pdf-meta{ color:#444; margin-bottom: 14px; font-size: 12px; }
+      body.pdfmode .pdf-h2{ margin: 18px 0 8px; font-size: 15px; font-weight: 900; }
+      body.pdfmode .pdf-box{
+        border: 1px solid #eee; border-radius: 10px;
+        padding: 12px; margin: 10px 0; break-inside: avoid;
+      }
+      body.pdfmode .pdf-qtitle{ margin:0 0 8px; font-size: 14px; font-weight: 900; }
+      body.pdfmode .pdf-opgdesc{ margin: 0 0 10px; font-size: 13px; line-height: 1.45; color:#111; }
+      body.pdfmode .pdf-row{ display:flex; gap:12px; align-items:flex-start; margin: 6px 0; }
+      body.pdfmode .pdf-label{ width: 80px; font-weight: 900; }
+      body.pdfmode .pdf-pill{ display:inline-block; padding:2px 8px; border-radius:999px; font-weight:900; font-size:12px; }
+      body.pdfmode .pdf-ok{ background:#dcfce7; color:#166534; }
+      body.pdfmode .pdf-bad{ background:#fee2e2; color:#991b1b; }
+      body.pdfmode .pdf-muted{ color:#555; font-size:12px; line-height:1.35; }
+      body.pdfmode .pdf-steps{ margin: 10px 0 0; padding-left: 18px; }
+      body.pdfmode .pdf-steps li{ margin: 4px 0; }
+      body.pdfmode .pdf-table th, body.pdfmode .pdf-table td{ padding:6px; border-bottom:1px solid #f3f4f6; }
+      body.pdfmode .pdf-table th{ text-transform:none; letter-spacing:0; font-size:12px; color:#111; }
+    }
+
+    @media (max-width: 900px){
+      h1{ font-size:34px; }
+      .topbar{ grid-template-columns: 1fr; }
+      .rightbox{ border-left:0; border-top:1px solid var(--border); }
+      .ans{ width:200px; }
+      .navbtn{ width:78px; min-width:78px; font-size:13px; }
+      .sub .label{ text-align:left; width:auto; min-width:auto; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div>
+      <div class="legend" id="legend"></div>
+      <div class="navstrip" id="navstrip" aria-label="Sider"></div>
+    </div>
+    <div class="rightbox">
+      <div class="finishRow">
+        <button class="btn" id="finishBtn" type="button">Afslut prøven</button>
+        <button class="btn secondary" id="printBtn" type="button">Print/PDF</button>
+      </div>
+
+      <div class="settings" id="progressText"></div>
+      <div class="smallnote">
+        Der vises ikke rigtig/forkert undervejs. Evaluering vises først, når du afslutter prøven.
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <h1 id="sectionTitle">—</h1>
+    <div class="subhead" id="subHead">—</div>
+    <div class="hint">
+      Dansk talformat: <strong>punktum = tusindtalsseparator</strong>, <strong>komma = decimal</strong>.
+    </div>
+    <div id="questions"></div>
+
+    <div class="pager">
+      <button id="prevPage" type="button">← Forrige side</button>
+      <div class="meta" id="pageMeta"></div>
+      <button id="nextPage" type="button">Næste side →</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="card">
+    <div class="cardhead">
+      <h2>Resultat</h2>
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <button class="btn" id="makePdfBtn" type="button">Lav PDF (alt + fejl du skal træne)</button>
+        <button class="btn secondary" id="closeModal" type="button">Luk</button>
+      </div>
+    </div>
+    <div class="cardbody" id="resultBody"></div>
+  </div>
+</div>
+
+<div id="pdfArea" aria-hidden="true"></div>
+
+<script>
+const EXAM = {
+  examId: "fp9-opgavesaet-11-v1",
+  title: "FP9 – Opgavesæt 11",
+  allowUnits: true,
+
+  sections: [
+    { id:"tal",  label:"Tal og algebra",             color:"green", title:"Tal og algebra",             startPage:1, endPage:3 },
+    { id:"geo",  label:"Geometri og måling",         color:"burg",  title:"Geometri og måling",         startPage:4, endPage:4 },
+    { id:"stat", label:"Statistik og sandsynlighed", color:"lilac", title:"Statistik og sandsynlighed", startPage:5, endPage:7 },
+  ],
+
+  pages: [
+    {
+      page: 1,
+      sectionId: "tal",
+      title: "Tal og algebra",
+      questions: [
+        {
+          id: "1",
+          title: "Skiltet viser priser i en sportsbutik.",
+          descHtml: `
+            <div class="qhtml">
+              <div><strong>• Træningstrøje:</strong> 249 kr.</div>
+              <div><strong>• Shorts:</strong> 179 kr.</div>
+              <div><strong>• Sokker:</strong> 65 kr.</div>
+              <div><strong>• Rabat på træningstrøjen:</strong> 50 kr.</div>
+            </div>
+          `,
+          subs: [
+            { id:"1.1", prompt:"Hvad koster en træningstrøje og et par shorts tilsammen? ________ kr.", answer:"428", check:"number" },
+            { id:"1.2", prompt:"Hvad koster træningstrøjen, når rabatten er trukket fra? ________ kr.", answer:"199", check:"number" },
+          ]
+        },
+        {
+          id: "2",
+          title: "Grøntsagssuppe",
+          desc: "En grøntsagssuppe til 3 personer kræver 20 g krydderurter. Hvor mange gram krydderurter skal bruges til 12 personer?",
+          subs: [
+            { id:"2.1", prompt:"__________ g", answer:"80", check:"number" }
+          ]
+        }
+      ]
+    },
+
+    {
+      page: 2,
+      sectionId: "tal",
+      title: "Tal og algebra",
+      questions: [
+        {
+          id: "3",
+          title: "Regn ud",
+          subs: [
+            { id:"3.1", prompt:"4387 + 256 =", answer:"4643", check:"number" },
+            { id:"3.2", prompt:"90007 − 89988 =", answer:"19", check:"number" },
+            { id:"3.3", prompt:"6 · 804 =", answer:"4824", check:"number" },
+            { id:"3.4", prompt:"7560 : 7 =", answer:"1080", check:"number" },
+          ]
+        },
+        {
+          id: "4",
+          title: "Ligninger",
+          subs: [
+            { id:"4.1", prompt:"5x = 35  →  x =", answer:"7", check:"number" },
+            { id:"4.2", prompt:"7x − 14 = 42  →  x =", answer:"8", check:"number" },
+          ]
+        },
+        {
+          id: "5",
+          title: "Udtryk",
+          subs: [
+            { id:"5.1", prompt:"(48 − 12) · 3 + 6 − 18 =", answer:"96", check:"number" },
+          ]
+        },
+      ]
+    },
+
+    {
+      page: 3,
+      sectionId: "tal",
+      title: "Tal og algebra",
+      questions: [
+        {
+          id: "6",
+          title: "Brøker",
+          subs: [
+            { id:"6.1", prompt:"Hvilken brøk er større end 1? (Skriv bogstavet) A) 3/5  B) 4/4  C) 7/6  D) 5/8  E) 9/10", answer:"C", check:"set", answerSet:["C","c"] },
+            { id:"6.2", prompt:"1/4 + 1/6 =", answer:"5/12", check:"set", answerSet:["5/12"] },
+          ]
+        },
+        {
+          id: "7",
+          title: "Potenser og rødder",
+          desc: "Beregn udtrykket.",
+          subs: [
+            { id:"7.1", prompt:"2^6 + √81 =", answer:"73", check:"number" },
+          ]
+        }
+      ]
+    },
+
+    {
+      page: 4,
+      sectionId: "geo",
+      title: "Geometri og måling",
+      questions: [
+        {
+          id: "8",
+          title: "Enheder",
+          subs: [
+            { id:"8.1", prompt:"3,6 kg = _____ t", answer:"0,0036", check:"set", answerSet:["0,0036"] },
+            { id:"8.2", prompt:"0,75 t = _____ kg", answer:"750", check:"number" },
+            { id:"8.3", prompt:"4200 g = _____ kg", answer:"4,2", check:"set", answerSet:["4,2"] },
+            { id:"8.4", prompt:"0,48 m = _____ cm", answer:"48", check:"number" },
+          ]
+        }
+      ]
+    },
+
+    {
+      page: 5,
+      sectionId: "stat",
+      title: "Statistik og sandsynlighed",
+      questions: [
+        {
+          id: "9",
+          title: "Diagram",
+          desc: "Diagrammet viser, hvor mange minutter Jonas brugte på lektier hver dag i en uge.",
+          image: "", // fx: "images/jonas_diagram.png"
+          subs: [
+            { id:"9.1", prompt:"Hvor mange dage brugte Jonas mere end 45 minutter på lektier?", answer:"", check:"exact" }
+          ]
+        }
+      ]
+    },
+
+    {
+      page: 6,
+      sectionId: "stat",
+      title: "Statistik og sandsynlighed",
+      questions: [
+        {
+          id: "10",
+          title: "Terningekampagne",
+          desc: "En butik kører en kampagne, hvor kunderne slår med en almindelig terning én gang. Slår man 1 eller 2, får man gratis fragt. Slår man 3, 4 eller 5, får man ingen rabat. Slår man 6, får man 30 % rabat.",
+          subs: [
+            { id:"10.1", prompt:"Hvor stor er sandsynligheden for, at en kunde får ingen rabat?", answer:"1/2", check:"set", answerSet:["1/2","0,5","50%","50 %"] },
+            { id:"10.2", prompt:"Hvor stor er sandsynligheden for, at en kunde får gratis fragt eller 30 % rabat?", answer:"1/2", check:"set", answerSet:["1/2","0,5","50%","50 %"] },
+          ]
+        }
+      ]
+    },
+
+    {
+      page: 7,
+      sectionId: "stat",
+      title: "Statistik og sandsynlighed",
+      questions: [
+        {
+          id: "11",
+          title: "Vinkler i trekant (ud fra billede)",
+          descHtml: `
+            <div class="qhtml">
+              Du skal ud fra billedet formulere en matematikkopgave om vinkler i en trekant.<br>
+              Vinkel A og vinkel B er angivet i grader i billedet.<br>
+              Vinkel C er den sidste indre vinkel i trekanten og skal bestemmes ved hjælp af trekantsummen.
+              <div style="margin-top:10px; font-weight:900;">
+                Formulér udelukkende opgaven i denne stil:<br>
+                “En trekant består af vinkel A: [grader] og vinkel B: [grader]. Hvor stor er vinkel C?”
+              </div>
+              <div style="margin-top:8px; color: var(--muted); font-size:13px;">
+                Ingen forklaringer. Kun opgaven.
+              </div>
+            </div>
+          `,
+          image: "", // fx: "images/trekant_vinkler.png"
+          subs: [
+            { id:"11.1", prompt:"Skriv opgaven:", answer:"", check:"exact" }
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+/* ===== ENGINE ===== */
+const qs = (sel) => document.querySelector(sel);
+
+const elLegend = qs("#legend");
+const elNavstrip = qs("#navstrip");
+const elSectionTitle = qs("#sectionTitle");
+const elSubHead = qs("#subHead");
+const elQuestions = qs("#questions");
+const elPrevPage = qs("#prevPage");
+const elNextPage = qs("#nextPage");
+const elPageMeta = qs("#pageMeta");
+const elProgressText = qs("#progressText");
+
+const elModal = qs("#modal");
+const elFinish = qs("#finishBtn");
+const elClose = qs("#closeModal");
+const elResultBody = qs("#resultBody");
+const elPrint = qs("#printBtn");
+const elMakePdfBtn = qs("#makePdfBtn");
+const elPdfArea = qs("#pdfArea");
+
+const storageKey = `exam_state:${EXAM.examId}`;
+
+const state = {
+  answers: new Map(),
+  activePage: 1,
+  pdfMode: false
+};
+
+function escapeHtml(s){
+  return String(s ?? "")
+    .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+}
+function normalizeExact(str){ return String(str ?? "").trim().replace(/\s+/g," "); }
+function stripUnitsIfAllowed(s){
+  if (!EXAM.allowUnits) return s;
+  return String(s).trim().replace(/[^0-9,.\-\/\s%]/g, "");
+}
+
+/* Dansk talformat:
+   - punktum = tusindtalsseparator (valgfri)
+   - komma = decimal
+   - punktum må IKKE bruges som decimal (så "1.5" er ugyldigt)
+*/
+function parseNumberDanish(input){
+  if (input == null) return null;
+  let s = stripUnitsIfAllowed(input).trim().replace(/\s+/g, "");
+  if (!s) return null;
+  if (s.includes("/")) return null;
+
+  const hasComma = s.includes(",");
+  const hasDot = s.includes(".");
+
+  if (hasComma){
+    s = s.replaceAll(".", "");
+    s = s.replace(",", ".");
+    const num = Number(s);
+    return Number.isFinite(num) ? num : null;
+  }
+  if (hasDot){
+    const thousandsOk = /^\-?\d{1,3}(\.\d{3})+$/.test(s);
+    if (!thousandsOk) return null;
+    s = s.replaceAll(".", "");
+    const num = Number(s);
+    return Number.isFinite(num) ? num : null;
+  }
+
+  const num = Number(s);
+  return Number.isFinite(num) ? num : null;
+}
+
+function isCorrectSub(sub, userValue){
+  const uvRaw = String(userValue ?? "").trim();
+  if (!uvRaw) return false;
+  const check = sub.check ?? "exact";
+
+  if (check === "exact"){
+    return normalizeExact(uvRaw) === normalizeExact(sub.answer);
+  }
+  if (check === "set"){
+    const opts = (sub.answerSet && Array.isArray(sub.answerSet)) ? sub.answerSet
+      : (Array.isArray(sub.answer) ? sub.answer : [sub.answer]);
+    const uv = normalizeExact(uvRaw);
+    return opts.some(a => normalizeExact(a) === uv);
+  }
+  if (check === "number"){
+    const a = parseNumberDanish(sub.answer);
+    const u = parseNumberDanish(uvRaw);
+    if (a == null || u == null) return false;
+    return Math.abs(a - u) <= 1e-9;
+  }
+  return normalizeExact(uvRaw) === normalizeExact(sub.answer);
+}
+
+/* ===== Local state ===== */
+function saveState(){
+  const payload = {
+    activePage: state.activePage,
+    answers: Array.from(state.answers.entries())
+  };
+  localStorage.setItem(storageKey, JSON.stringify(payload));
+}
+function loadState(){
+  const raw = localStorage.getItem(storageKey);
+  if (!raw) return;
+  try{
+    const payload = JSON.parse(raw);
+    if (payload?.answers) state.answers = new Map(payload.answers);
+    if (typeof payload.activePage === "number"){
+      state.activePage = Math.min(Math.max(1, payload.activePage), EXAM.pages.length);
+    }
+  }catch{}
+}
+
+/* ===== Legend ===== */
+function renderLegend(){
+  elLegend.innerHTML = "";
+  for (const s of EXAM.sections){
+    const tag = document.createElement("div");
+    tag.className = "tag";
+    const sw = document.createElement("span");
+    sw.className = "swatch";
+    sw.style.background = getComputedStyle(document.documentElement).getPropertyValue(`--${s.color}`);
+    tag.appendChild(sw);
+    const tx = document.createElement("span");
+    tx.textContent = s.label;
+    tag.appendChild(tx);
+    elLegend.appendChild(tag);
+  }
+}
+
+/* ===== Topbar (Sider) ===== */
+function pageCompleted(pageNumber){
+  const page = EXAM.pages.find(p => p.page === pageNumber);
+  if (!page) return false;
+
+  for (const q of page.questions){
+    for (const sub of (q.subs ?? [])){
+      const v = state.answers.get(sub.id);
+      if (!v || !String(v).trim()) return false;
+    }
+  }
+  return true;
+}
+
+function renderNav(){
+  elNavstrip.innerHTML = "";
+
+  // Rækkefølge KRAV:
+  // (grøn) Tal og algebra -> (rød/bourgogne) Geometri og måling -> (lilla) Statistik og sandsynlighed
+  const order = ["tal", "geo", "stat"];
+
+  for (const secId of order){
+    const sec = EXAM.sections.find(s => s.id === secId);
+    if (!sec) continue;
+
+    const seg = document.createElement("div");
+    seg.className = `seg ${sec.color}`;
+
+    for (let p=sec.startPage; p<=sec.endPage; p++){
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "navbtn";
+
+      const span = document.createElement("span");
+      span.textContent = `Side ${p}`;
+      btn.appendChild(span);
+
+      if (pageCompleted(p)) btn.classList.add("done");
+      if (p === state.activePage) btn.classList.add("active");
+
+      btn.addEventListener("click", () => {
+        state.activePage = p;
+        saveState();
+        renderAll();
+        try{ window.scrollTo({ top: 0, behavior: "smooth" }); }catch{ window.scrollTo(0,0); }
+      });
+
+      seg.appendChild(btn);
+    }
+    elNavstrip.appendChild(seg);
+  }
+}
+
+/* ===== Progress ===== */
+function renderProgress(){
+  const allSubs = [];
+  for (const p of EXAM.pages){
+    for (const q of p.questions){
+      for (const sub of (q.subs ?? [])){
+        allSubs.push(sub.id);
+      }
+    }
+  }
+  const total = allSubs.length;
+  let started = 0;
+  for (const id of allSubs){
+    const v = state.answers.get(id);
+    if (v && String(v).trim()) started++;
+  }
+  elProgressText.textContent = `${started} / ${total} besvaret`;
+}
+
+/* ===== Page render ===== */
+function renderPage(){
+  const page = EXAM.pages.find(p => p.page === state.activePage) || EXAM.pages[0];
+  const sec = EXAM.sections.find(s => s.id === page.sectionId) || EXAM.sections[0];
+
+  elSectionTitle.textContent = sec.title;
+  elSubHead.textContent = `Side ${page.page} af ${EXAM.pages.length}`;
+
+  elQuestions.innerHTML = "";
+
+  for (const q of page.questions){
+    const block = document.createElement("div");
+    block.className = "qblock";
+
+    const head = document.createElement("div");
+    head.className = "qhead";
+
+    const title = document.createElement("div");
+    title.className = "qtitle";
+    title.innerHTML = `<span>${escapeHtml(q.title ?? "")}</span>`;
+    head.appendChild(title);
+
+    const meta = document.createElement("div");
+    meta.className = "qmeta";
+    meta.textContent = (q.subs?.length ? `${q.subs.length} del(e)` : "");
+    head.appendChild(meta);
+
+    block.appendChild(head);
+
+    if (q.desc){
+      const p = document.createElement("div");
+      p.className = "qhtml";
+      p.textContent = q.desc;
+      block.appendChild(p);
+    }
+    if (q.descHtml){
+      const p = document.createElement("div");
+      p.className = "qhtml";
+      p.innerHTML = q.descHtml;
+      block.appendChild(p);
+    }
+
+    // Image slot (kun hvis udfyldt)
+    if (q.image && String(q.image).trim()){
+      const media = document.createElement("div");
+      media.className = "qmedia";
+      media.innerHTML = `
+        <img src="${escapeHtml(q.image)}" alt="Billede til opgave" loading="lazy" />
+        ${q.caption ? `<div class="qcaption">${escapeHtml(q.caption)}</div>` : ``}
+      `;
+      block.appendChild(media);
+    }
+
+    for (const sub of (q.subs ?? [])){
+      const row = document.createElement("div");
+      row.className = "sub";
+
+      const label = document.createElement("div");
+      label.className = "label";
+      label.textContent = sub.id;
+      row.appendChild(label);
+
+      const prompt = document.createElement("div");
+      prompt.className = "prompt";
+      prompt.textContent = sub.prompt ?? "";
+      row.appendChild(prompt);
+
+      const input = document.createElement("input");
+      input.className = "ans";
+      input.autocomplete = "off";
+      input.spellcheck = false;
+      input.value = state.answers.get(sub.id) ?? "";
+      input.addEventListener("input", () => {
+        state.answers.set(sub.id, input.value);
+        saveState();
+        renderNav();
+        renderProgress();
+      });
+      row.appendChild(input);
+
+      block.appendChild(row);
+    }
+
+    elQuestions.appendChild(block);
+  }
+
+  elPageMeta.textContent = `Side ${page.page} af ${EXAM.pages.length}`;
+
+  elPrevPage.disabled = state.activePage <= 1;
+  elNextPage.disabled = state.activePage >= EXAM.pages.length;
+}
+
+function renderAll(){
+  renderLegend();
+  renderNav();
+  renderPage();
+  renderProgress();
+}
+
+/* ===== Pager ===== */
+function goPrevPage(){
+  if (state.activePage <= 1) return;
+  state.activePage -= 1;
+  saveState();
+  renderAll();
+  try{ window.scrollTo({ top: 0, behavior: "smooth" }); }catch{ window.scrollTo(0,0); }
+}
+function goNextPage(){
+  if (state.activePage >= EXAM.pages.length) return;
+  state.activePage += 1;
+  saveState();
+  renderAll();
+  try{ window.scrollTo({ top: 0, behavior: "smooth" }); }catch{ window.scrollTo(0,0); }
+}
+
+/* ===== Resultater + PDF ===== */
+function allSubRows(){
+  const rows = [];
+  for (const p of EXAM.pages){
+    for (const q of p.questions){
+      for (const sub of (q.subs ?? [])){
+        rows.push({ page: p.page, sectionId: p.sectionId, q, sub });
+      }
+    }
+  }
+  return rows;
+}
+
+function gradeAll(){
+  const rows = [];
+  let correct = 0;
+  let total = 0;
+
+  for (const item of allSubRows()){
+    total++;
+    const user = state.answers.get(item.sub.id) ?? "";
+    const ok = isCorrectSub(item.sub, user);
+    if (ok) correct++;
+
+    const corr = (item.sub.check === "set")
+      ? (((item.sub.answerSet && Array.isArray(item.sub.answerSet)) ? item.sub.answerSet : (Array.isArray(item.sub.answer) ? item.sub.answer : [item.sub.answer]))).join(" | ")
+      : (Array.isArray(item.sub.answer) ? item.sub.answer.join(" | ") : String(item.sub.answer ?? ""));
+
+    rows.push({
+      side: item.page,
+      sektion: (EXAM.sections.find(s=>s.id===item.sectionId)?.title ?? ""),
+      opgave: item.q.title ?? "",
+      del: item.sub.id,
+      prompt: item.sub.prompt ?? "",
+      svar: user,
+      korrekt: corr,
+      status: ok ? "Rigtigt" : "Forkert"
+    });
+  }
+
+  const pct = total ? Math.round((correct/total)*100) : 0;
+  return { rows, correct, total, pct };
+}
+
+function openResults(){
+  const r = gradeAll();
+
+  let html = `<p style="margin:0 0 12px;font-weight:900;">
+    Score: ${r.correct} / ${r.total} delopgaver (${r.pct}%)
+  </p>`;
+
+  html += `<table>
+    <thead>
+      <tr>
+        <th>Side</th>
+        <th>Del</th>
+        <th>Din besvarelse</th>
+        <th>Korrekt</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>`;
+
+  for (const row of r.rows){
+    const pill = row.status === "Rigtigt"
+      ? `<span class="pill ok">Rigtigt</span>`
+      : `<span class="pill bad">Forkert</span>`;
+    html += `<tr>
+      <td><strong>${row.side}</strong></td>
+      <td class="mono">${escapeHtml(row.del)}</td>
+      <td>${escapeHtml(row.svar || "(tom)")}</td>
+      <td>${escapeHtml(row.korrekt || "(ingen facit sat)")}</td>
+      <td>${pill}</td>
+    </tr>`;
+  }
+  html += `</tbody></table>`;
+
+  elResultBody.innerHTML = html;
+  elModal.classList.add("open");
+}
+function closeResults(){ elModal.classList.remove("open"); }
+
+function groupBy(arr, keyFn){
+  const m = new Map();
+  for (const item of arr){
+    const k = keyFn(item);
+    if (!m.has(k)) m.set(k, []);
+    m.get(k).push(item);
+  }
+  return m;
+}
+
+function buildPdfContent(){
+  const r = gradeAll();
+  const now = new Date();
+  const dateStr = now.toLocaleString("da-DK");
+
+  const wrong = r.rows.filter(x => x.status === "Forkert");
+
+  let html = `
+    <div class="pdf-title">Resultatark – ${escapeHtml(EXAM.title)}</div>
+    <div class="pdf-meta">
+      Dato/tid: <strong>${escapeHtml(dateStr)}</strong><br>
+      Score: <strong>${r.correct} / ${r.total}</strong> (${r.pct}%)
+    </div>
+
+    <div class="pdf-muted">
+      <strong>Fejl du skal træne:</strong> Start her og ret dem én for én.
+    </div>
+
+    <div class="pdf-h2">Sådan gemmer du PDF</div>
+    <div class="pdf-box">
+      <ol class="pdf-steps">
+        <li>Tryk <strong>Ctrl+P</strong> (Windows) eller <strong>Cmd+P</strong> (Mac).</li>
+        <li>Vælg <strong>Gem som PDF</strong>.</li>
+        <li>Tryk <strong>Gem</strong>.</li>
+      </ol>
+    </div>
+  `;
+
+  html += `<div class="pdf-h2">Fejl du skal træne</div>`;
+  if (wrong.length === 0){
+    html += `<div class="pdf-box"><strong>Ingen fejl</strong> – alt er korrekt i denne test.</div>`;
+  } else {
+    const groupedWrong = groupBy(wrong, x => x.del.split(".")[0]);
+    for (const [groupKey, rows] of groupedWrong.entries()){
+      html += `<div class="pdf-box">
+        <div class="pdf-qtitle">Opgavegruppe ${escapeHtml(groupKey)}</div>
+      `;
+      for (const row of rows){
+        html += `
+          <div class="pdf-row">
+            <div class="pdf-label">${escapeHtml(row.del)}</div>
+            <div style="flex:1;">
+              <div><strong>Delopgave:</strong> ${escapeHtml(row.prompt)}</div>
+              <div><strong>Din besvarelse:</strong> ${escapeHtml(row.svar || "(tom)")}</div>
+              <div><strong>Korrekt:</strong> ${escapeHtml(row.korrekt || "(ingen facit sat)")}</div>
+              <div style="margin-top:4px;"><span class="pdf-pill pdf-bad">Forkert</span></div>
+            </div>
+          </div>
+        `;
+      }
+      html += `</div>`;
+    }
+  }
+
+  html += `<div class="pdf-h2">Alle delopgaver (din besvarelse + evaluering)</div>`;
+  for (const row of r.rows){
+    const ok = row.status === "Rigtigt";
+    html += `<div class="pdf-box">
+      <div class="pdf-qtitle">Side ${escapeHtml(row.side)} • ${escapeHtml(row.sektion)}</div>
+      <div class="pdf-opgdesc"><strong>${escapeHtml(row.del)}</strong> – ${escapeHtml(row.prompt)}</div>
+      <div class="pdf-row">
+        <div class="pdf-label">Svar</div>
+        <div style="flex:1;">
+          <div><strong>Din besvarelse:</strong> ${escapeHtml(row.svar || "(tom)")}</div>
+          <div><strong>Korrekt:</strong> ${escapeHtml(row.korrekt || "(ingen facit sat)")}</div>
+          <div style="margin-top:4px;">
+            <span class="pdf-pill ${ok ? "pdf-ok" : "pdf-bad"}">${ok ? "Rigtigt" : "Forkert"}</span>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  /* ✅ RETTELSE: Status (rigtigt/forkert) fremgår tydeligt i PDF'ens facitliste */
+  html += `<div class="pdf-h2">Facitliste (med status)</div>`;
+  html += `<table class="pdf-table" style="width:100%; border-collapse:collapse; margin-top:8px;">
+    <thead><tr><th>Del</th><th>Din besvarelse</th><th>Facit</th><th>Status</th></tr></thead><tbody>`;
+  for (const row of r.rows){
+    const ok = row.status === "Rigtigt";
+    html += `<tr>
+      <td class="mono"><strong>${escapeHtml(row.del)}</strong></td>
+      <td>${escapeHtml(row.svar || "(tom)")}</td>
+      <td>${escapeHtml(row.korrekt || "(ingen facit sat)")}</td>
+      <td><span class="pdf-pill ${ok ? "pdf-ok" : "pdf-bad"}">${ok ? "Rigtigt" : "Forkert"}</span></td>
+    </tr>`;
+  }
+  html += `</tbody></table>`;
+
+  elPdfArea.innerHTML = html;
+}
+
+function enterPdfMode(){
+  document.body.classList.add("pdfmode");
+  state.pdfMode = true;
+}
+function exitPdfMode(){
+  document.body.classList.remove("pdfmode");
+  state.pdfMode = false;
+  elPdfArea.innerHTML = "";
+}
+
+function makePdfAllAndWrong(){
+  closeResults();
+  buildPdfContent();
+  enterPdfMode();
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      window.print();
+    });
+  });
+}
+
+/* ===== Events + init ===== */
+function bindEvents(){
+  qs("#prevPage").addEventListener("click", () => goPrevPage());
+  qs("#nextPage").addEventListener("click", () => goNextPage());
+
+  elFinish.addEventListener("click", () => openResults());
+  elClose.addEventListener("click", () => closeResults());
+
+  elModal.addEventListener("click", (e) => {
+    if (e.target === elModal) closeResults();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && elModal.classList.contains("open")) closeResults();
+  });
+
+  elPrint.addEventListener("click", () => window.print());
+  elMakePdfBtn.addEventListener("click", () => makePdfAllAndWrong());
+
+  window.addEventListener("afterprint", () => {
+    if (state.pdfMode) exitPdfMode();
+  });
+}
+
+function init(){
+  loadState();
+  bindEvents();
+  renderAll();
+}
+init();
+</script>
+</body>
+</html>
