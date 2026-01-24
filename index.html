@@ -132,11 +132,51 @@
     .sub:first-of-type{ border-top:0; }
     .sub .label{ width:78px; min-width:78px; font-weight:900; font-size:16px; text-align:right; }
     .sub .prompt{ flex:1; font-size:20px; min-width: 220px; }
+    .answrap{ display:flex; align-items:center; gap:10px; }
     .ans{
       width: 240px; height: 44px; font-size: 18px; padding: 6px 10px;
       border: 2px solid #d1d5db; border-radius: 8px; outline:none;
     }
     .ans:focus{ border-color: var(--focus); }
+    .unit{
+      font-weight:900;
+      font-size:18px;
+      color:#111;
+      min-width: 10px;
+      user-select:none;
+      white-space:nowrap;
+    }
+
+    /* Fraction input */
+    .frac{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+    }
+    .fracBox{
+      display:flex;
+      flex-direction:column;
+      align-items:stretch;
+      justify-content:center;
+      gap:6px;
+      width: 120px;
+    }
+    .fracIn{
+      width: 120px;
+      height: 40px;
+      font-size: 18px;
+      padding: 6px 10px;
+      border: 2px solid #d1d5db;
+      border-radius: 8px;
+      outline:none;
+    }
+    .fracIn:focus{ border-color: var(--focus); }
+    .fracBar{
+      height: 2px;
+      background:#111;
+      border-radius:99px;
+      margin: 0 6px;
+    }
 
     .pager{
       display:flex; justify-content:space-between; align-items:center;
@@ -222,6 +262,7 @@
       .ans{ width:200px; }
       .navbtn{ width:78px; min-width:78px; font-size:13px; }
       .sub .label{ text-align:left; width:auto; min-width:auto; }
+      .fracBox, .fracIn{ width: 110px; }
     }
   </style>
 </head>
@@ -278,16 +319,18 @@
 
 <script>
 const EXAM = {
-  examId: "fp9-opgavesaet-11-v1",
+  examId: "fp9-opgavesaet-11-v2",
   title: "FP9 – Opgavesæt 11",
   allowUnits: true,
 
+  // KRAV: Topbar rækkefølge + farver
   sections: [
     { id:"tal",  label:"Tal og algebra",             color:"green", title:"Tal og algebra",             startPage:1, endPage:3 },
     { id:"geo",  label:"Geometri og måling",         color:"burg",  title:"Geometri og måling",         startPage:4, endPage:4 },
     { id:"stat", label:"Statistik og sandsynlighed", color:"lilac", title:"Statistik og sandsynlighed", startPage:5, endPage:7 },
   ],
 
+  // KRAV: 15 delopgaver i alt (bevarer delopgave-id'er; der kan være spring)
   pages: [
     {
       page: 1,
@@ -297,6 +340,7 @@ const EXAM = {
         {
           id: "1",
           title: "Skiltet viser priser i en sportsbutik.",
+          image: "images/sportsbutik.png",
           descHtml: `
             <div class="qhtml">
               <div><strong>• Træningstrøje:</strong> 249 kr.</div>
@@ -306,16 +350,17 @@ const EXAM = {
             </div>
           `,
           subs: [
-            { id:"1.1", prompt:"Hvad koster en træningstrøje og et par shorts tilsammen? ________ kr.", answer:"428", check:"number" },
-            { id:"1.2", prompt:"Hvad koster træningstrøjen, når rabatten er trukket fra? ________ kr.", answer:"199", check:"number" },
+            { id:"1.1", prompt:"Hvad koster en træningstrøje og et par shorts tilsammen?", unit:"kr", answer:"428", check:"number" },
+            { id:"1.2", prompt:"Hvad koster træningstrøjen, når rabatten er trukket fra?", unit:"kr", answer:"199", check:"number" },
           ]
         },
         {
           id: "2",
           title: "Grøntsagssuppe",
+          image: "images/suppe.png",
           desc: "En grøntsagssuppe til 3 personer kræver 20 g krydderurter. Hvor mange gram krydderurter skal bruges til 12 personer?",
           subs: [
-            { id:"2.1", prompt:"__________ g", answer:"80", check:"number" }
+            { id:"2.1", prompt:"Hvor mange gram krydderurter skal bruges til 12 personer?", unit:"g", answer:"80", check:"number" }
           ]
         }
       ]
@@ -332,25 +377,8 @@ const EXAM = {
           subs: [
             { id:"3.1", prompt:"4387 + 256 =", answer:"4643", check:"number" },
             { id:"3.2", prompt:"90007 − 89988 =", answer:"19", check:"number" },
-            { id:"3.3", prompt:"6 · 804 =", answer:"4824", check:"number" },
-            { id:"3.4", prompt:"7560 : 7 =", answer:"1080", check:"number" },
           ]
-        },
-        {
-          id: "4",
-          title: "Ligninger",
-          subs: [
-            { id:"4.1", prompt:"5x = 35  →  x =", answer:"7", check:"number" },
-            { id:"4.2", prompt:"7x − 14 = 42  →  x =", answer:"8", check:"number" },
-          ]
-        },
-        {
-          id: "5",
-          title: "Udtryk",
-          subs: [
-            { id:"5.1", prompt:"(48 − 12) · 3 + 6 − 18 =", answer:"96", check:"number" },
-          ]
-        },
+        }
       ]
     },
 
@@ -360,11 +388,26 @@ const EXAM = {
       title: "Tal og algebra",
       questions: [
         {
+          id: "3b",
+          title: "Regn ud",
+          subs: [
+            { id:"3.3", prompt:"6 · 804 =", answer:"4824", check:"number" },
+            { id:"3.4", prompt:"7560 : 7 =", answer:"1080", check:"number" },
+          ]
+        },
+        {
           id: "6",
           title: "Brøker",
           subs: [
-            { id:"6.1", prompt:"Hvilken brøk er større end 1? (Skriv bogstavet) A) 3/5  B) 4/4  C) 7/6  D) 5/8  E) 9/10", answer:"C", check:"set", answerSet:["C","c"] },
-            { id:"6.2", prompt:"1/4 + 1/6 =", answer:"5/12", check:"set", answerSet:["5/12"] },
+            {
+              id:"6.2",
+              promptHtml:`<span>\\(\\frac{1}{4} + \\frac{1}{6}\\) =</span>`,
+              // KRAV: Brøk-svartype (to felter)
+              answerType:"fraction",
+              answerNumerator:"5",
+              answerDenominator:"12",
+              check:"fraction"
+            }
           ]
         },
         {
@@ -372,7 +415,13 @@ const EXAM = {
           title: "Potenser og rødder",
           desc: "Beregn udtrykket.",
           subs: [
-            { id:"7.1", prompt:"2^6 + √81 =", answer:"73", check:"number" },
+            {
+              id:"7.1",
+              // KRAV: rigtige potenser/rødder via HTML
+              promptHtml:`<span>2<sup>6</sup> + &radic;81 =</span>`,
+              answer:"73",
+              check:"number"
+            },
           ]
         }
       ]
@@ -387,10 +436,8 @@ const EXAM = {
           id: "8",
           title: "Enheder",
           subs: [
-            { id:"8.1", prompt:"3,6 kg = _____ t", answer:"0,0036", check:"set", answerSet:["0,0036"] },
-            { id:"8.2", prompt:"0,75 t = _____ kg", answer:"750", check:"number" },
-            { id:"8.3", prompt:"4200 g = _____ kg", answer:"4,2", check:"set", answerSet:["4,2"] },
-            { id:"8.4", prompt:"0,48 m = _____ cm", answer:"48", check:"number" },
+            { id:"8.1", prompt:"3,6 kg =", unit:"t", answer:"0,0036", check:"set", answerSet:["0,0036"] },
+            { id:"8.2", prompt:"0,75 t =", unit:"kg", answer:"750", check:"number" },
           ]
         }
       ]
@@ -405,9 +452,9 @@ const EXAM = {
           id: "9",
           title: "Diagram",
           desc: "Diagrammet viser, hvor mange minutter Jonas brugte på lektier hver dag i en uge.",
-          image: "", // fx: "images/jonas_diagram.png"
+          image: "images/jonas_lektier.png",
           subs: [
-            { id:"9.1", prompt:"Hvor mange dage brugte Jonas mere end 45 minutter på lektier?", answer:"", check:"exact" }
+            { id:"9.1", prompt:"Hvor mange dage brugte Jonas mere end 40 minutter på lektier?", unit:"dage", answer:"2", check:"number" }
           ]
         }
       ]
@@ -421,10 +468,16 @@ const EXAM = {
         {
           id: "10",
           title: "Terningekampagne",
+          image: "images/terning.png",
           desc: "En butik kører en kampagne, hvor kunderne slår med en almindelig terning én gang. Slår man 1 eller 2, får man gratis fragt. Slår man 3, 4 eller 5, får man ingen rabat. Slår man 6, får man 30 % rabat.",
           subs: [
-            { id:"10.1", prompt:"Hvor stor er sandsynligheden for, at en kunde får ingen rabat?", answer:"1/2", check:"set", answerSet:["1/2","0,5","50%","50 %"] },
-            { id:"10.2", prompt:"Hvor stor er sandsynligheden for, at en kunde får gratis fragt eller 30 % rabat?", answer:"1/2", check:"set", answerSet:["1/2","0,5","50%","50 %"] },
+            {
+              id:"10.1",
+              prompt:"Hvor stor er sandsynligheden for, at en kunde får ingen rabat?",
+              answer:"1/2",
+              check:"set",
+              answerSet:["1/2","0,5","50%","50 %"]
+            }
           ]
         }
       ]
@@ -436,25 +489,31 @@ const EXAM = {
       title: "Statistik og sandsynlighed",
       questions: [
         {
+          id: "10b",
+          title: "Terningekampagne",
+          desc: "Samme kampagne som på side 6.",
+          subs: [
+            {
+              id:"10.2",
+              prompt:"Hvor stor er sandsynligheden for, at en kunde får gratis fragt eller 30 % rabat?",
+              answer:"1/2",
+              check:"set",
+              answerSet:["1/2","0,5","50%","50 %"]
+            }
+          ]
+        },
+        {
           id: "11",
-          title: "Vinkler i trekant (ud fra billede)",
+          title: "Vinkler i trekant",
+          image: "images/trekant.png",
           descHtml: `
             <div class="qhtml">
-              Du skal ud fra billedet formulere en matematikkopgave om vinkler i en trekant.<br>
               Vinkel A og vinkel B er angivet i grader i billedet.<br>
-              Vinkel C er den sidste indre vinkel i trekanten og skal bestemmes ved hjælp af trekantsummen.
-              <div style="margin-top:10px; font-weight:900;">
-                Formulér udelukkende opgaven i denne stil:<br>
-                “En trekant består af vinkel A: [grader] og vinkel B: [grader]. Hvor stor er vinkel C?”
-              </div>
-              <div style="margin-top:8px; color: var(--muted); font-size:13px;">
-                Ingen forklaringer. Kun opgaven.
-              </div>
+              Bestem vinkel C ved hjælp af trekantsummen.
             </div>
           `,
-          image: "", // fx: "images/trekant_vinkler.png"
           subs: [
-            { id:"11.1", prompt:"Skriv opgaven:", answer:"", check:"exact" }
+            { id:"11.1", prompt:"Hvor mange grader er vinkel C?", unit:"°", answer:"50", check:"number" }
           ]
         }
       ]
@@ -534,10 +593,25 @@ function parseNumberDanish(input){
   return Number.isFinite(num) ? num : null;
 }
 
+function normalizeFractionPair(n, d){
+  const nn = String(n ?? "").trim();
+  const dd = String(d ?? "").trim();
+  if (!nn || !dd) return "";
+  return `${nn}/${dd}`;
+}
+
 function isCorrectSub(sub, userValue){
+  const check = sub.check ?? "exact";
+
+  if (sub.answerType === "fraction" || check === "fraction"){
+    const uv = normalizeExact(String(userValue ?? ""));
+    if (!uv) return false;
+    const corr = normalizeFractionPair(sub.answerNumerator, sub.answerDenominator);
+    return uv === corr;
+  }
+
   const uvRaw = String(userValue ?? "").trim();
   if (!uvRaw) return false;
-  const check = sub.check ?? "exact";
 
   if (check === "exact"){
     return normalizeExact(uvRaw) === normalizeExact(sub.answer);
@@ -611,8 +685,7 @@ function pageCompleted(pageNumber){
 function renderNav(){
   elNavstrip.innerHTML = "";
 
-  // Rækkefølge KRAV:
-  // (grøn) Tal og algebra -> (rød/bourgogne) Geometri og måling -> (lilla) Statistik og sandsynlighed
+  // KRAV rækkefølge:
   const order = ["tal", "geo", "stat"];
 
   for (const secId of order){
@@ -667,6 +740,54 @@ function renderProgress(){
 }
 
 /* ===== Page render ===== */
+function renderFractionInput(sub){
+  const wrap = document.createElement("div");
+  wrap.className = "frac";
+
+  const box = document.createElement("div");
+  box.className = "fracBox";
+
+  const top = document.createElement("input");
+  top.className = "fracIn";
+  top.inputMode = "numeric";
+  top.autocomplete = "off";
+  top.spellcheck = false;
+  top.placeholder = "tæller";
+
+  const bar = document.createElement("div");
+  bar.className = "fracBar";
+
+  const bot = document.createElement("input");
+  bot.className = "fracIn";
+  bot.inputMode = "numeric";
+  bot.autocomplete = "off";
+  bot.spellcheck = false;
+  bot.placeholder = "nævner";
+
+  const current = String(state.answers.get(sub.id) ?? "");
+  const parts = current.includes("/") ? current.split("/") : ["",""];
+  top.value = parts[0] ?? "";
+  bot.value = parts[1] ?? "";
+
+  function sync(){
+    const val = normalizeFractionPair(top.value, bot.value);
+    state.answers.set(sub.id, val);
+    saveState();
+    renderNav();
+    renderProgress();
+  }
+
+  top.addEventListener("input", sync);
+  bot.addEventListener("input", sync);
+
+  box.appendChild(top);
+  box.appendChild(bar);
+  box.appendChild(bot);
+
+  wrap.appendChild(box);
+  return wrap;
+}
+
 function renderPage(){
   const page = EXAM.pages.find(p => p.page === state.activePage) || EXAM.pages[0];
   const sec = EXAM.sections.find(s => s.id === page.sectionId) || EXAM.sections[0];
@@ -730,22 +851,42 @@ function renderPage(){
 
       const prompt = document.createElement("div");
       prompt.className = "prompt";
-      prompt.textContent = sub.prompt ?? "";
+      if (sub.promptHtml){
+        prompt.innerHTML = sub.promptHtml;
+      } else {
+        prompt.textContent = sub.prompt ?? "";
+      }
       row.appendChild(prompt);
 
-      const input = document.createElement("input");
-      input.className = "ans";
-      input.autocomplete = "off";
-      input.spellcheck = false;
-      input.value = state.answers.get(sub.id) ?? "";
-      input.addEventListener("input", () => {
-        state.answers.set(sub.id, input.value);
-        saveState();
-        renderNav();
-        renderProgress();
-      });
-      row.appendChild(input);
+      const answrap = document.createElement("div");
+      answrap.className = "answrap";
 
+      if (sub.answerType === "fraction"){
+        answrap.appendChild(renderFractionInput(sub));
+      } else {
+        const input = document.createElement("input");
+        input.className = "ans";
+        input.autocomplete = "off";
+        input.spellcheck = false;
+        input.value = state.answers.get(sub.id) ?? "";
+        input.addEventListener("input", () => {
+          state.answers.set(sub.id, input.value);
+          saveState();
+          renderNav();
+          renderProgress();
+        });
+        answrap.appendChild(input);
+      }
+
+      // KRAV: enhed fast BAG svarfeltet (ikke i prompt)
+      if (sub.unit && String(sub.unit).trim()){
+        const u = document.createElement("div");
+        u.className = "unit";
+        u.textContent = sub.unit;
+        answrap.appendChild(u);
+      }
+
+      row.appendChild(answrap);
       block.appendChild(row);
     }
 
@@ -794,6 +935,18 @@ function allSubRows(){
   return rows;
 }
 
+function correctString(sub){
+  if (sub.answerType === "fraction" || sub.check === "fraction"){
+    return normalizeFractionPair(sub.answerNumerator, sub.answerDenominator);
+  }
+  if (sub.check === "set"){
+    const opts = (sub.answerSet && Array.isArray(sub.answerSet)) ? sub.answerSet
+      : (Array.isArray(sub.answer) ? sub.answer : [sub.answer]);
+    return opts.join(" | ");
+  }
+  return (Array.isArray(sub.answer) ? sub.answer.join(" | ") : String(sub.answer ?? ""));
+}
+
 function gradeAll(){
   const rows = [];
   let correct = 0;
@@ -805,18 +958,14 @@ function gradeAll(){
     const ok = isCorrectSub(item.sub, user);
     if (ok) correct++;
 
-    const corr = (item.sub.check === "set")
-      ? (((item.sub.answerSet && Array.isArray(item.sub.answerSet)) ? item.sub.answerSet : (Array.isArray(item.sub.answer) ? item.sub.answer : [item.sub.answer]))).join(" | ")
-      : (Array.isArray(item.sub.answer) ? item.sub.answer.join(" | ") : String(item.sub.answer ?? ""));
-
     rows.push({
       side: item.page,
       sektion: (EXAM.sections.find(s=>s.id===item.sectionId)?.title ?? ""),
       opgave: item.q.title ?? "",
       del: item.sub.id,
-      prompt: item.sub.prompt ?? "",
+      prompt: item.sub.promptHtml ? normalizeExact(item.sub.promptHtml.replace(/<[^>]*>/g," ")) : (item.sub.prompt ?? ""),
       svar: user,
-      korrekt: corr,
+      korrekt: correctString(item.sub),
       status: ok ? "Rigtigt" : "Forkert"
     });
   }
@@ -946,7 +1095,6 @@ function buildPdfContent(){
     </div>`;
   }
 
-  /* ✅ RETTELSE: Status (rigtigt/forkert) fremgår tydeligt i PDF'ens facitliste */
   html += `<div class="pdf-h2">Facitliste (med status)</div>`;
   html += `<table class="pdf-table" style="width:100%; border-collapse:collapse; margin-top:8px;">
     <thead><tr><th>Del</th><th>Din besvarelse</th><th>Facit</th><th>Status</th></tr></thead><tbody>`;
