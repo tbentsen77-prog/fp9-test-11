@@ -536,7 +536,7 @@ subs: [
           desc: "Diagrammet viser, hvor stor en procentdel af elever i 7., 8. og 9. klasse der cykler i skole.",
           image: "images/diagram.png",
           subs: [
-            { id:"11.1", prompt:"Cirka hvor stor en procentdel af 8. klasse cykler i skole?", answer:"49", check:"number", unitAfter:"%" }
+            { id:"11.1", prompt:"Cirka hvor stor en procentdel af 8. klasse cykler i skole?", answerMin:"48", answerMax:"49", check:"range", unitAfter:"%" }
           ]
         }
       ]
@@ -713,6 +713,13 @@ function isCorrectSub(sub, userValue){
     const u = normalizeFraction(uvRaw);
     if (a == null || u == null) return false;
     return a === u;
+  }
+  if (check === "range"){
+    const u = parseNumberDanish(uvRaw);
+    const mn = parseNumberDanish(sub.answerMin);
+    const mx = parseNumberDanish(sub.answerMax);
+    if (u == null || mn == null || mx == null) return false;
+    return (u >= mn - 1e-9) && (u <= mx + 1e-9);
   }
   if (check === "number"){
     const a = parseNumberDanish(sub.answer);
@@ -1057,7 +1064,9 @@ function gradeAll(){
 
     const corr = (item.sub.check === "set")
       ? (((item.sub.answerSet && Array.isArray(item.sub.answerSet)) ? item.sub.answerSet : (Array.isArray(item.sub.answer) ? item.sub.answer : [item.sub.answer]))).join(" | ")
-      : (Array.isArray(item.sub.answer) ? item.sub.answer.join(" | ") : String(item.sub.answer ?? ""));
+      : (item.sub.check === "range")
+        ? `${String(item.sub.answerMin ?? "")}–${String(item.sub.answerMax ?? "")}`
+        : (Array.isArray(item.sub.answer) ? item.sub.answer.join(" | ") : String(item.sub.answer ?? ""));
 
     rows.push({
       side: item.page,
