@@ -393,15 +393,15 @@ const EXAM = {
           subs: [
             { 
               id:"1.1", 
-              prompt:"Hvad koster nachos og en sodavand tilsammen? ________ kr.", 
+              prompt:"Hvad koster nachos og en sodavand tilsammen? ", 
               answer:"167", 
-              check:"number" 
+              check:"number", unitAfter:"kr" 
             },
             { 
               id:"1.2", 
-              prompt:"Hvad koster nachos, når rabatten er trukket fra? ________ kr.", 
+              prompt:"Hvad koster nachos, når rabatten er trukket fra? ", 
               answer:"99", 
-              check:"number" 
+              check:"number", unitAfter:"kr" 
             }
           ]
         },
@@ -410,10 +410,10 @@ const EXAM = {
         {
           id: "2",
           title: "Smoothie",
-          desc: "En smoothie til 2 personer kræver 15 g honning. Hvor mange gram honning skal der bruges til 10 personer?",
+          desc: "En smoothie til 2 personer kræver 15 g honning.",
           image: "images/smoothie.png",
-          subs: [
-            { id:"2.1", prompt:"__________ g", answer:"75", check:"number" }
+subs: [
+            { id:"2.1", prompt:"Hvor mange gram honning skal der bruges til 10 personer?", answer:"75", check:"number", unitAfter:"g" }
           ]
         }
       ]
@@ -467,10 +467,10 @@ const EXAM = {
             { id:"6.1", prompt:"2. Hvilken brøk er større end 1? (Sæt kryds)", check:"mc", answer:"D",
               options:[
                 { value:"A", html:"<span class='fracText'><span class='top'>6</span><span class='bar'></span><span class='bot'>7</span></span>" },
-                { value:"B", html:"<span class='fracText'><span class='top'>8</span><span class='bar'></span><span class='bot'>9</span></span>" },
+                { value:"B", html:"<span class='fracText'><span class='top'>3</span><span class='bar'></span><span class='bot'>9</span></span>" },
                 { value:"C", html:"<span class='fracText'><span class='top'>10</span><span class='bar'></span><span class='bot'>11</span></span>" },
                 { value:"D", html:"<span class='fracText'><span class='top'>12</span><span class='bar'></span><span class='bot'>10</span></span>" },
-                { value:"E", html:"<span class='fracText'><span class='top'>3</span><span class='bar'></span><span class='bot'>4</span></span>" }
+                { value:"E", html:"<span class='fracText'><span class='top'>1</span><span class='bar'></span><span class='bot'>4</span></span>" }
               ]
             },
             { id:"6.2", promptHtml:"<span class='fracText'><span class='top'>3</span><span class='bar'></span><span class='bot'>8</span></span> + <span class='fracText'><span class='top'>2</span><span class='bar'></span><span class='bot'>8</span></span> =", answer:"5/8", check:"fraction" },
@@ -498,7 +498,7 @@ const EXAM = {
           title: "Enheder",
           subs: [
             { id:"8.1", prompt:"725 kg = _____ t", answer:"0,725", check:"number", unitAfter:"t" },
-            { id:"8.2", prompt:"38 kg = _____ g", answer:"38000", check:"number" },
+            { id:"8.2", prompt:"3,8 kg = _____ g", answer:"3800", check:"number" },
             { id:"8.3", prompt:"260 cm = _____ m", answer:"2,6", check:"number", unitAfter:"m" },
             { id:"8.4", prompt:"7500 m = _____ km", answer:"7,5", check:"number", unitAfter:"km" },
           ]
